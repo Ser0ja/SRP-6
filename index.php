@@ -12,10 +12,8 @@ echo "The index<br />";
  */
 $hashAlgo = "sha256";
 
-# A large safe prime (N = 2q+1, where q is prime)
-# All arithmetic is done modulo N
-# (generated using "openssl dhparam -text 1024")
-// Must be a non-smooth-prime (p.12)
+// Must be a safe prime (n = 2p - 1, for p as prime)
+// (generated using "openssl dhparam -text 1024")
 $n = "00:f2:fe:02:b5:a8:a8:62:96:68:da:92:b6:99:59:
             4f:ce:5d:3f:70:ba:bd:52:4f:bd:7a:56:d4:c6:57:
             45:dc:72:00:47:92:a2:a7:fc:e6:97:83:d3:1a:45:
@@ -30,6 +28,8 @@ $n = preg_replace('/\s+/', '', $n);
 $n = new Math_BigInteger('0x' . $n, 16);
 // Generator modulus the 
 $g = new Math_Biginteger(2); 
+$k = hexToBigInt(
+    hash($hashAlgo, $n->toString() . $g->toString()));
 
 $username = "carol";
 
@@ -88,8 +88,12 @@ $salt = $salt;
 $x = hash("sha256", $salt . "carols-password");
 $x = hexToBigInt($x);
 
+// kg^x
+$kgx = $k->multiply($g->modPow($x, $n));
+$kgx = bigMod($kgx, $n);
+
 // B - g^x
-$Bgx = $B->subtract($g->modPow($x, $n));
+$Bgx = $B->subtract($kgx);
 $Bgx = bigMod($Bgx, $n);
 
 // a + ux

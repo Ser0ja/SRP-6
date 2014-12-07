@@ -12,6 +12,7 @@ class Srp6
 	// Must be a non-smooth-prime (p.12)
 	private $n;
 	private $g;
+	private $k;
 	private $b;
 	private $B;
 	private $u;
@@ -34,6 +35,8 @@ class Srp6
 	{
 		$this->n = $this->hexToBigInt($n);
 		$this->g = $this->hexToBigInt($g);
+		$this->k = $this->hexToBigInt(
+			hash($this->hashAlgo, $this->n->toString() . $this->g->toString()));
 
 	}
 
@@ -52,12 +55,12 @@ class Srp6
 	{
 		$x = $this->hexToBigInt($x);
 		$v = $this->g->modPow($x, $this->n);
-		$v = $this->bigMod($v);	
+		$v = $this->modN($v);	
 		return $v;
 
 	}
 
-	private function bigMod($number)
+	private function modN($number)
 	{
 		return $number->modPow(new Math_BigInteger(1), $this->n);
 	}
@@ -80,9 +83,13 @@ class Srp6
 		/*
 		 * Calculate B
 		 */
+		// kv
+		$kv 	 = $this->modN($this->k->multiply($this->v));
+		// g^b
 		$this->B = $this->g->modPow($this->b, $this->n);
-		$this->B = $this->v->add($this->B);
-		$this->B = $this->bigMod($this->B);
+		// kv + g^b
+		$this->B =   $kv->add($this->B);
+		$this->B = $this->modN($this->B);
 
 		/*
 		 * Generate u, the srp-6 way
@@ -97,7 +104,7 @@ class Srp6
 	{
 		// A*v^u
 		$Avu = $A->multiply($this->v->modPow($this->u, $this->n));
-		$Avu = bigMod($Avu, $this->n);
+		$Avu = $this->modN($Avu, $this->n);
 
 		// (A*v^u)^b
 		$this->S = $Avu->modPow($this->b, $this->n);
