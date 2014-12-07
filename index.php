@@ -6,7 +6,9 @@ require_once('src/Srp6.class.php');
 echo "The index<br />";
 
 
-
+/*
+ * ClientCode
+ */
 $hashAlgo = "sha256";
 
 # A large safe prime (N = 2q+1, where q is prime)
@@ -28,21 +30,11 @@ $n = new Math_BigInteger('0x' . $n, 16);
 // Generator modulus the 
 $g = new Math_Biginteger(2); 
 
+$username = "carol";
 
 /*
- * THE ALL NEW THING
- */
-
-$srp = new Srp6();
-
-// Get the v for Carol
-
-$x = hash("sha256", "carols-salt" . "carols-password");
-$v = $srp->generateV($x);
-$srp->setV($v->toHex());
-
-
-/*
+ * CLIENT CODE
+ * ----------------------------------
  * Client sends username and ephemeral value A to the server
  */
 
@@ -55,32 +47,48 @@ $a = $min->random($n);
 $a = bigMod($a, $n);
 $A = $g->modPow($a, $n);
 
-// Send username and A to the server
-$username = "carol";
 
+// Send
+$A = $A;
+$username = $username;
 
 /*
+ * SERVER CODE
+ * ---------------------
  * Server sends the user's salt together with the value B, and u to the client
  */
+// Received data
+$A = $A;
+$username = $username;
+
+$srp = new Srp6();
+
+// Get the v for Carol
+$v = getVFromDatabase($username);
+$srp->setV($v);
+
+
 
 $srp->calculateBandU($A);
 
 // to send
-$salt = "carols-salt";
+$salt = getSaltFromDb($username);
 $B = $srp->getB();
 $u = $srp->getU();
 
 /*
+ * CLIENT CODE
+ * ------------------------------
  * Client computes the session key
  */
 
+// Received parameters
 $B = hexToBigInt($B);
 $u = hexToBigInt($u);
+$salt = $salt;
 
-// Generate the secret key x
-// Calculate the session key
-
-
+// Generate x
+$x = hash("sha256", $salt . "carols-password");
 $x = hexToBigInt($x);
 
 // B - g^x
@@ -93,12 +101,15 @@ $aux = bigMod($aux, $n);
 
 // (B - g^x)^{a+ux}
 $SClient = $Bgx->modPow($aux, $n);
+$ClientKey = hash($hashAlgo, $SClient->toString());
 
 echo "sessionkey of client <br />";
-echo hash($hashAlgo, $SClient->toString());
+echo $ClientKey;
 echo "<br />";
 
 /*
+ * SERVER CODE
+ * -----------------------------
  * Server computes session key
  */
 
@@ -109,16 +120,29 @@ echo $srp->getKey();
 echo "<br />";
 
 
+function getVFromDatabase($username)
+{
+    // $x = hash("sha256", "carols-salt" . "carols-password");
+    // $v = $srp->generateV($x);
+    // SELECT v from users where username = $username
+    return "11b9bd6a59a1a7e9cbf51251542ef5a97c745ea4de2c6466e05f3606d8e27e953ca5ae5044a62a0ddd6e5263de8f144c845a657990ddcc29207111ce1e55b03cb5852039b87d05e342a633cbd5c54ba829a24096f58e21d3dc299e0d57e218b0a9e2fec3d6702417182df1d195c990ddcadfae9231e8d36d2f10dfa5b4732a3f";
+}
+
+function getSaltFromDb($username)
+{
+    // SELET salt from users where username = $username
+    return "carols-salt";
+}
 function bigMod($number, $mod)
 {
-	return $number->modPow(new Math_BigInteger(1), $mod);
+    return $number->modPow(new Math_BigInteger(1), $mod);
 }
 function hexToBigInt($string)
 {
-	// Remove : and all whitespace
-	$string = str_replace(":","", $string);
-	$string = preg_replace('/\s+/', '', $string);
-	return new Math_BigInteger('0x' . $string, 16);	
+    // Remove : and all whitespace
+    $string = str_replace(":","", $string);
+    $string = preg_replace('/\s+/', '', $string);
+    return new Math_BigInteger('0x' . $string, 16); 
 }
 
 ?>
