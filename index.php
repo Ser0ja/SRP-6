@@ -28,10 +28,6 @@ $n = new Math_BigInteger('0x' . $n, 16);
 // Generator modulus the 
 $g = new Math_Biginteger(2); 
 
-$password = "thesecret password";
-
-
-
 
 /*
  * THE ALL NEW THING
@@ -99,7 +95,7 @@ $aux = bigMod($aux, $n);
 $SClient = $Bgx->modPow($aux, $n);
 
 echo "sessionkey of client <br />";
-echo $SClient->toString();
+echo hash($hashAlgo, $SClient->toString());
 echo "<br />";
 
 /*
@@ -109,7 +105,7 @@ echo "<br />";
 $srp->computeS($A);
 
 echo "sessionkey of server <br />";
-echo $srp->getS()->toString();
+echo $srp->getKey();
 echo "<br />";
 
 

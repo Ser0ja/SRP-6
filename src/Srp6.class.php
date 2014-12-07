@@ -17,6 +17,7 @@ class Srp6
 	private $u;
 	private $v;
 	private $S;
+	private $key;
 
 	function __construct(
 		$g = "02", 
@@ -100,6 +101,12 @@ class Srp6
 
 		// (A*v^u)^b
 		$this->S = $Avu->modPow($this->b, $this->n);
+		$this->key = hash($this->hashAlgo, $this->S->toString());
+	}
+
+	public function getKey()
+	{
+		return $this->key;
 	}
 
 	/*
