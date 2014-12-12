@@ -36,6 +36,8 @@ $username = "carol";
 
 echo $n->toString();
 
+echo "<br>" . hash($hashAlgo, "abab");
+
 /*
  * Client sends username and ephemeral value A to the server
  */
