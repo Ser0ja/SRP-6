@@ -3,14 +3,7 @@
 require_once('src/BigInteger.php');
 require_once('src/Srp6.class.php');
 
-echo "The index<br />";
-
 $hashAlgo = "sha256";
-
-/*
- * CLIENT CODE
- * -------------------
- */
 
 // Must be a safe prime (n = 2p - 1, for p as prime)
 // (generated using "openssl dhparam -text 1024")
@@ -30,6 +23,30 @@ $n = new Math_BigInteger('0x' . $n, 16);
 $g = new Math_Biginteger(2); 
 $k = hexToBigInt(
     hash($hashAlgo, $n->toString() . $g->toString()));
+
+
+$action = $_POST["action"];
+
+switch ($action) {
+    case 'someAction':
+        handleSomeAction();
+        break;
+    
+    default:
+        handleDefault($action);
+        break;
+}
+
+
+function handleDefault($action)
+{
+    die("Sorry, action: '$action' has not been implemented.");
+}
+
+function handleSomeAction()
+{
+    die("Server was called by someAction");
+}
 
 $username = "carol";
 
