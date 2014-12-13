@@ -10,6 +10,15 @@
 
         function d2h(d) {return d.toString(16);}
         function h2d(h) {return parseInt(h,16);} 
+        function sha265hash(string)
+        {
+            var hash;
+            var byteArray = new Clipperz.ByteArray(string);
+            hash = Clipperz.Crypto.SHA.sha256(byteArray);
+            var hex = hash.toHexString();
+            var digest_sha256 = hex.substring(2);
+            return digest_sha256;
+        }
 
         $(document).ready(function(){
             //var g = new Clipperz.ByteArray(d2h(2));
@@ -20,6 +29,9 @@
 
             var g = new Clipperz.Crypto.BigInt(g_hex, 16);
             var n = new Clipperz.Crypto.BigInt(n_hex, 16);
+
+            var k_hex = sha265hash(n + g);
+            var k = new Clipperz.Crypto.BigInt(k_hex, 16);
             
             // Initial step
             
@@ -27,13 +39,45 @@
             // TODO: Find a random a
             var a = new Clipperz.Crypto.BigInt("797efabd9c8996a32cf7d2a8c145a321e9afda799bb1d5e3a127f5eb2e4ff737a1a768844f6f28987d56aea3022437a8fd8e234342d4a81fcd586cdf33387db689b82ea9e07539e14c854062e13ff6190897b3639d106c7051c3b65ea635fdabdcf0a31af933e5acf6e73f3680f0ebbd3e1852c37d867602a10147d125b28f72",16);
             var A = g.powerModule(a, n);
-            
+
             $.ajax({
                 url: "server.php",
                 type: "POST",
                 data: {action: "Initial", A: d2h(A), username: "carol"},
-                success: function(data){
-                    alert(data);
+                success: function(json){
+                    var data = JSON.parse(json);
+
+                    var salt = data.salt;
+
+                    var B_hex = data.B;
+                    var B = new Clipperz.Crypto.BigInt(B_hex, 16);
+
+                    var u_hex = data.u;
+                    var u = new Clipperz.Crypto.BigInt(u_hex, 16);
+
+                    // Calculate x
+                    var hashHex = sha265hash(salt + "carols-password");
+                    var x = new Clipperz.Crypto.BigInt(hashHex, 16);
+
+                    // kg^x
+                    var kgx = k.multiply(g.powerModule(x, n));
+                    kgx = kgx.module(n);
+
+                    // B - kg^x
+                    var Bkgx = B.subtract(kgx);
+                    Bkgx = Bkgx.module(n);
+
+                    // a + ux
+                    var aux = a.add(u.multiply(x));
+                    aux = aux.module(n);
+
+                    // (B - kg^x)^{a+ux}
+                    var S = Bkgx.powerModule(aux, n);
+                    var key = sha265hash(S.asString(10));
+
+                    console.log("Client key: " + key);
+                    console.log("server key: " + data.serverKey);
+
                 }
             });
 
@@ -44,11 +88,6 @@
             //alert(result.asString());
 
             // Hash a string
-            var hash;
-            var byteArray = new Clipperz.ByteArray("abab");
-            hash = Clipperz.Crypto.SHA.sha256(byteArray);
-            var hex = hash.toHexString();
-            var digest_sha256 = hex.substring(2);
 
         });
         </script>

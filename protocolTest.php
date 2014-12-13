@@ -33,11 +33,6 @@ $k = hexToBigInt(
 
 $username = "carol";
 
-
-echo $n->toString();
-
-echo "<br>" . hash($hashAlgo, "abab");
-
 /*
  * Client sends username and ephemeral value A to the server
  */
@@ -49,6 +44,7 @@ $min = new Math_BigInteger($min);
 // Generates a value from log_g(n) to n
 $a = $min->random($n);
 $a = bigMod($a, $n);
+$a = new Math_BigInteger("797efabd9c8996a32cf7d2a8c145a321e9afda799bb1d5e3a127f5eb2e4ff737a1a768844f6f28987d56aea3022437a8fd8e234342d4a81fcd586cdf33387db689b82ea9e07539e14c854062e13ff6190897b3639d106c7051c3b65ea635fdabdcf0a31af933e5acf6e73f3680f0ebbd3e1852c37d867602a10147d125b28f72", 16);
 $A = $g->modPow($a, $n);
 
 
@@ -56,7 +52,7 @@ $A = $g->modPow($a, $n);
 $A = $A;
 $username = $username;
 echo "<br /> a: " . $a->toHex() . "<br />";
-echo "<br /> A: " . $A->toString() . "<br />";
+echo "<br /> A: " . $A->toHex() . "<br />";
 
 /*
  * SERVER CODE
@@ -86,30 +82,44 @@ $u = $srp->getU();
  * Client computes the session key
  */
 
+//DELETe
+
+
 // Received parameters
+echo "B hash: " . $B . "<br />";
+echo "u hash: " . $u . "<br />";
 $B = hexToBigInt($B);
 $u = hexToBigInt($u);
 $salt = $salt;
 
 // Generate x
 $x = hash("sha256", $salt . "carols-password");
+echo "x hash: " . $x . "<br />";
 $x = hexToBigInt($x);
 
 // kg^x
 $kgx = $k->multiply($g->modPow($x, $n));
 $kgx = bigMod($kgx, $n);
 
-// B - g^x
+echo "kgx: " . $kgx->toHex() . "<br/>";
+
+// B - kg^x
 $Bgx = $B->subtract($kgx);
 $Bgx = bigMod($Bgx, $n);
+
+echo "Bkgx: " . $Bgx->toHex() . "<br/>";
 
 // a + ux
 $aux = $a->add($u->multiply($x));
 $aux = bigMod($aux, $n);
 
-// (B - g^x)^{a+ux}
+echo "aux: " . $aux->toHex() . "<br/>";
+
+// (B - kg^x)^{a+ux}
 $SClient = $Bgx->modPow($aux, $n);
 $ClientKey = hash($hashAlgo, $SClient->toString());
+
+echo "SClient: " . $SClient->toHex() . "<br/>";
 
 echo "sessionkey of client <br />";
 echo $ClientKey;
@@ -121,7 +131,7 @@ echo "<br />";
  * Server computes session key
  */
 
-$srp->computeS($A);
+$srp->computeS($A->toHex());
 
 echo "sessionkey of server <br />";
 echo $srp->getKey();

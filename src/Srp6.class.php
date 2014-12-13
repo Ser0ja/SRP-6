@@ -94,7 +94,7 @@ class Srp6
 		// g^b
 		$this->B = $this->g->modPow($this->b, $this->n);
 		// kv + g^b
-		$this->B =   $kv->add($this->B);
+		$this->B = $kv->add($this->B);
 		$this->B = $this->modN($this->B);
 
 		/*
@@ -106,8 +106,13 @@ class Srp6
 	}
 
 
+	/*
+	 * Take the A, and computes S for the session
+	 */
 	public function computeS($A)
 	{
+		$A = new Math_BigInteger('0x' . $A, 16);
+
 		// A*v^u
 		$Avu = $A->multiply($this->v->modPow($this->u, $this->n));
 		$Avu = $this->modN($Avu, $this->n);
