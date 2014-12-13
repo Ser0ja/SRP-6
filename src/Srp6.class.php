@@ -66,8 +66,14 @@ class Srp6
 	}
 
 
+	/*
+	 * Take an A as hex, and calculates B and u
+	 */
 	public function calculateBandU($A)
 	{
+		$A = new Math_BigInteger('0x' . $A, 16);
+
+
 		/*
 		 * Generate b
 		 */

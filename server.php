@@ -31,12 +31,40 @@ switch ($action) {
     case 'someAction':
         handleSomeAction();
         break;
+
+    case 'Initial':
+        handleInitial($_POST["A"], $_POST["username"]);
     
     default:
         handleDefault($action);
         break;
 }
 
+
+function handleInitial($A, $username)
+{
+    $srp = new Srp6();
+
+    // Get the v for Carol
+    $v = getVFromDatabase($username);
+    $srp->setV($v);
+
+    $srp->calculateBandU($A);
+
+    // to send
+    $salt = getSaltFromDb($username);
+    $B = $srp->getB();
+    $u = $srp->getU();
+
+
+    $ret = array(
+        'status' => 'ok', 
+        'salt' => $salt, 
+        'B' => $B, 
+        'u' => $u);
+
+    die(json_encode($ret));
+}
 
 function handleDefault($action)
 {
@@ -55,47 +83,10 @@ echo $n->toString();
 
 echo "<br>" . hash($hashAlgo, "abab");
 
-/*
- * Client sends username and ephemeral value A to the server
- */
-
-// a must be bigger than log_g(n). 
-$min = log(floatval($n->toString()), floatval($g->toString()));
-$min = new Math_BigInteger($min);
-
-// Generates a value from log_g(n) to n
-$a = $min->random($n);
-$a = bigMod($a, $n);
-$A = $g->modPow($a, $n);
-
-
-// Send
-$A = $A;
-$username = $username;
-echo "<br /> a: " . $a->toHex() . "<br />";
-echo "<br /> A: " . $A->toString() . "<br />";
-
-/*
- * SERVER CODE
- * ---------------------
- * Server sends the user's salt together with the value B, and u to the client
- */
 // Received data
 $A = $A;
 $username = $username;
 
-$srp = new Srp6();
-
-// Get the v for Carol
-$v = getVFromDatabase($username);
-$srp->setV($v);
-
-$srp->calculateBandU($A);
-
-// to send
-$salt = getSaltFromDb($username);
-$B = $srp->getB();
-$u = $srp->getU();
 
 /*
  * CLIENT CODE

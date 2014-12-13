@@ -73,7 +73,7 @@ $srp = new Srp6();
 $v = getVFromDatabase($username);
 $srp->setV($v);
 
-$srp->calculateBandU($A);
+$srp->calculateBandU($A->toHex());
 
 // to send
 $salt = getSaltFromDb($username);
