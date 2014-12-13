@@ -135,6 +135,11 @@ class Srp6
 		return $this->B->toHex();
 	}
 
+	public function getb_()
+	{
+		return $this->b->toHex();
+	}
+
 	/*
 	 * Return the hex of the u parameter
 	 */

@@ -38,6 +38,7 @@ function handleInitial($A, $username)
         'status' => 'ok', 
         'salt' => $salt, 
         'B' => $B, 
+        '_b' => $srp->getb_(),
         'u' => $u,
         'A' => $A,
         'serverKey' => $srp->getKey());
@@ -49,19 +50,6 @@ function handleDefault($action)
 {
     die("Sorry, action: '$action' has not been implemented.");
 }
-
-function handleSomeAction()
-{
-    die("Server was called by someAction");
-}
-
-
-//$srp->computeS($A);
-
-//echo "sessionkey of server <br />";
-//echo $srp->getKey();
-//echo "<br />";
-
 
 function getVFromDatabase($username)
 {
