@@ -38,7 +38,6 @@ function handleInitial($A, $username)
         'status' => 'ok', 
         'salt' => $salt, 
         'B' => $B, 
-        '_b' => $srp->getb_(),
         'u' => $u,
         'A' => $A,
         'serverKey' => $srp->getKey());
