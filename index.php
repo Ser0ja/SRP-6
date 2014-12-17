@@ -1,6 +1,7 @@
 <html>
   <head>
         <title>Example</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
         <script type="text/javascript" src="js/MochiKit/MochiKit.js"></script>
         <script type="text/javascript" src="js/Clipperz/ByteArray.js"></script>
         <script type="text/javascript" src="js/Clipperz/Crypto/SHA.js"></script>
@@ -17,11 +18,14 @@
             $("#data").append("Data calculated: <br />" +
                 "a: " + srp.a + "<br />" +
                 "A: " + srp.A + "<br /><br/>" +
-                "Data sent to server: <br />" +
+                "Data to be sent to server: <br />" +
                 "A, <br/>" +
                 "Username: " + "carol <br/><br/>");
 
-            $('#submit').on('click', function(){
+            //DEBUG
+            $('#submit').trigger("click");
+
+            $('button[type=submit]').on('click', function(){
                 $("#img-ajax").css("visibility", "visible");
 
                 $.ajax({
@@ -38,14 +42,32 @@
                             "B: " + data.B + "<br/>" +
                             "u: " + data.u + "<br/><br />");
 
+                        // Generate the key
                         var key = srp.calculateKey("carols-password", 
                             data.salt, data.B, data.u);
 
-                        console.log("Client key: " + key);
-                        console.log("server key: " + data.serverKey);
+                        // Prepare to send the verification of the key, to 
+                        // the server
+                        var verificationHash = srp.generateVerification(data.B);
 
-                        $("#data").append("client key: <br/>" + key + "<br/>");
-                        $("#data").append("server key: <br/>" + key + "<br />");
+                        $("data").append("Computing: <br/>" +
+                            "CLient key: " + key + "<br/>" +
+                            "verificationHash: " + verificationHash + "<br/><br/>");
+
+                        $("data").append("Transmitting to server: <br/>" + 
+                            "verificationHash");
+
+                        $.ajax({
+                            url: "server.php",
+                            type: "POST",
+                            data: {action: "Verification", verificationHash: verificationHash},
+                            success: function(json){
+                                var data = JSON.parse(json);
+
+                                $("data").append("Response from server: <br />");
+                            }
+                        })
+
                     }
                 });
             });
@@ -55,11 +77,14 @@
         </script>
   </head>
   <body>
-        <input type="text" name="username" /><br />
-        <input type="text" name="password" /><br />
-        <button id="submit">Login</button><br />
+        <div class="login">
+            <h1>Login</h1>
+            <input type="text" name="u" placeholder="Username" required="required" />
+            <input type="password" name="p" placeholder="Password" required="required" />
+            <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
 
-        <div id="data"></div>
-        <img src="ajax-loader.gif" id="img-ajax" style="visibility: hidden" />
+            <div class="debug" id="data"></div>
+            <img src="ajax-loader.gif" id="img-ajax" style="visibility: hidden" />
+        </div>
    </body>
 </html>

@@ -66,15 +66,15 @@ SrpProtocol.prototype.calculateKey = function(password, salt, B_hex, u_hex) {
     console.log("aux:" + aux.asString(16));
 
     // (B - kg^x)^{a+ux}
-    this.S = Bkgx.powerModule(aux, n);
-    console.log("S: " + this.S.asString(16));
-    this.key = this.hash(this.S.asString(10));
+    var S = Bkgx.powerModule(aux, n);
+    console.log("S: " + S.asString(16));
+    this.key = this.hash(S.asString(10));
     return this.key;
 }
 
-SrpProtocol.prototype.generateVerification = function(B_hex)
+SrpProtocol.prototype.generateVerification(B)
 {
-    return this.hash(this.A.asString(16) + B_hex + this.S.asString(16));
+	return this.hash(this.A.asString(16) + B.asString(16) + this.key);
 }
 
 SrpProtocol.prototype.hash = function(string){
