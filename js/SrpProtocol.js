@@ -20,7 +20,30 @@ SrpProtocol.prototype.getA = function(){
     return this.A.toString(16);
 }
 
-SrpProtocol.prototype.calculateKey = function(password, salt, B_hex, u_hex) {
+SrpProtocol.prototype.generateUserInfo = function(username, password){
+    var salt = "carols-salt";
+    var x = this.generateX(salt, username, password);
+
+    // Generate v
+    var v = this.g.powerModule(x, this.n);
+    v = v.module(this.n);
+
+    var ret = {
+        salt: salt,
+        v: v
+    }
+    return ret;
+}
+
+SrpProtocol.prototype.generateX = function(salt, username, password){
+    // Calculate x
+    var hashHex = this.hash(salt + username +  password);
+    console.log("hash: " + hashHex);
+    var x = new Clipperz.Crypto.BigInt(hashHex, 16);
+
+    return x;
+}
+SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex, u_hex) {
     var k = this.k;
     var g = this.g;
     var n = this.n;
@@ -34,9 +57,7 @@ SrpProtocol.prototype.calculateKey = function(password, salt, B_hex, u_hex) {
     console.log("u: " + u.asString(16));
 
     // Calculate x
-    var hashHex = this.hash(salt + password);
-    console.log("hash: " + hashHex);
-    var x = new Clipperz.Crypto.BigInt(hashHex, 16);
+    var x = this.generateX(salt, username, password);
 
     // kg^x
     var kgx = k.multiply(g.powerModule(x, n));

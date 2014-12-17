@@ -15,23 +15,28 @@
             var srp = new SrpProtocol();
             var A = srp.getA();
 
-            $("#data").append("Data calculated: <br />" +
-                "a: " + srp.a + "<br />" +
-                "A: " + srp.A + "<br /><br/>" +
-                "Data to be sent to server: <br />" +
-                "A, <br/>" +
-                "Username: " + "carol <br/><br/>");
-
             //DEBUG
             $('#submit').trigger("click");
 
             $('button[type=submit]').on('click', function(){
                 $("#img-ajax").css("visibility", "visible");
+                $("#data").css("visibility", "visible");
+
+
+                var username = "carol";
+                var password = "carols-password";
+
+                $("#data").append("Data calculated: <br />" +
+                    "a: " + srp.a + "<br />" +
+                    "A: " + srp.A + "<br /><br/>" +
+                    "Data to be sent to server: " +
+                    "A, " + 
+                    "Username: " + username + " <br/><br/>");
 
                 $.ajax({
                     url: "server.php",
                     type: "POST",
-                    data: {action: "Initial", A: A, username: "carol"},
+                    data: {action: "Initial", A: A, username: username},
                     success: function(json){
                         $("#img-ajax").css("visibility", "hidden");
 
@@ -43,30 +48,30 @@
                             "u: " + data.u + "<br/><br />");
 
                         // Generate the key
-                        var key = srp.calculateKey("carols-password", 
+                        var key = srp.calculateKey(username, password, 
                             data.salt, data.B, data.u);
 
                         // Prepare to send the verification of the key, to 
                         // the server
-                        var verificationHash = srp.generateVerification(data.B);
+                        var verificationHash = "test"; //srp.generateVerification(data.B);
 
-                        $("data").append("Computing: <br/>" +
-                            "CLient key: " + key + "<br/>" +
+                        $("#data").append("Computing: <br/>" +
+                            "Client key: " + key + "<br/>" +
+                            "Server key: " + data.serverKey + "<br/>" +
                             "verificationHash: " + verificationHash + "<br/><br/>");
 
-                        $("data").append("Transmitting to server: <br/>" + 
+                        $("#data").append("Transmitting to server: <br/>" + 
                             "verificationHash");
 
-                        $.ajax({
-                            url: "server.php",
-                            type: "POST",
-                            data: {action: "Verification", verificationHash: verificationHash},
-                            success: function(json){
-                                var data = JSON.parse(json);
-
-                                $("data").append("Response from server: <br />");
-                            }
-                        })
+                        //$.ajax({
+                        //    url: "server.php",
+                        //    type: "POST",
+                        //    data: {action: "Verification", verificationHash: verificationHash},
+                        //    success: function(json){
+                        //        var data = JSON.parse(json);
+                        //        $("data").append("Response from server: <br />");
+                        //    }
+                        //})
 
                     }
                 });
@@ -83,7 +88,7 @@
             <input type="password" name="p" placeholder="Password" required="required" />
             <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
 
-            <div class="debug" id="data"></div>
+            <div class="debug" id="data" style="visibility: hidden;"></div>
             <img src="ajax-loader.gif" id="img-ajax" style="visibility: hidden" />
         </div>
    </body>

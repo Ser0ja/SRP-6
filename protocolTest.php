@@ -90,7 +90,7 @@ $u = hexToBigInt($u);
 $salt = $salt;
 
 // Generate x
-$x = hash("sha256", $salt . "carols-password");
+$x = hash("sha256", $salt .  "carols-password");
 echo "<br/>x: " . $x . "<br />";
 $x = hexToBigInt($x);
 
@@ -151,7 +151,8 @@ function getVFromDatabase($username)
     // $v = $srp->generateV($x);
 
     // SELECT v from users where username = $username
-    return "11b9bd6a59a1a7e9cbf51251542ef5a97c745ea4de2c6466e05f3606d8e27e953ca5ae5044a62a0ddd6e5263de8f144c845a657990ddcc29207111ce1e55b03cb5852039b87d05e342a633cbd5c54ba829a24096f58e21d3dc299e0d57e218b0a9e2fec3d6702417182df1d195c990ddcadfae9231e8d36d2f10dfa5b4732a3f";
+    //return "11b9bd6a59a1a7e9cbf51251542ef5a97c745ea4de2c6466e05f3606d8e27e953ca5ae5044a62a0ddd6e5263de8f144c845a657990ddcc29207111ce1e55b03cb5852039b87d05e342a633cbd5c54ba829a24096f58e21d3dc299e0d57e218b0a9e2fec3d6702417182df1d195c990ddcadfae9231e8d36d2f10dfa5b4732a3f";
+    return "be2f67918a0d6931b35f676ef722f3d9f7d78169c3ff1c9654c700a5677259a3754f832926f1983eff4fcd63060d65ed3ad8fc094b9a38597c9f77af2d334ec20467fd07891603b5e4536ba37ed55955d97836c77b51de2e70411e17f749c5468ed378699e48af779ea9e4df0df23865274d7239f3dfafec421c94477a86878b";
 }
 
 function getSaltFromDb($username)

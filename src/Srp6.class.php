@@ -7,7 +7,7 @@ class Srp6
 	private $hashAlgo = "sha256";
 
 	# A large safe prime (N = 2q+1, where q is prime)
-	# All arithmetic is done modulo N
+	# All aithmetic is done modulo N
 	# (generated using "openssl dhparam -text 1024")
 	// Must be a non-smooth-prime (p.12)
 	private $n;
