@@ -44,7 +44,7 @@ SrpProtocol.prototype.generateX = function(salt, username, password){
 
     return x;
 }
-SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex, u_hex) {
+SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     var k = this.k;
     var g = this.g;
     var n = this.n;
@@ -54,6 +54,7 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex, u
     var B = new Clipperz.Crypto.BigInt(B_hex, 16);
     console.log("B: " + B.asString(16));
 
+    var u_hex = this.hash(this.A.asString(16) + B.asString(16));
     var u = new Clipperz.Crypto.BigInt(u_hex, 16);
     console.log("u: " + u.asString(16));
 

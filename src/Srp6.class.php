@@ -69,7 +69,7 @@ class Srp6
 	/*
 	 * Take an A as hex, and calculates B and u
 	 */
-	public function calculateBandU($A)
+	public function calculateB($A)
 	{
 		$A = new Math_BigInteger('0x' . $A, 16);
 
@@ -96,12 +96,6 @@ class Srp6
 		$this->B = $kv->add($this->B);
 		$this->B = $this->modN($this->B);
 
-		/*
-		 * Generate u, the srp-6 way
-		 */
-		$uHash = hash($this->hashAlgo, 
-			$A->toString() . $this->B->toString());
-		$this->u = $this->hexToBigInt($uHash);
 		$this->A = $A;
 	}
 
@@ -111,7 +105,14 @@ class Srp6
 	 */
 	public function computeS($A)
 	{
-		$A = new Math_BigInteger('0x' . $A, 16);
+		$A = $this->A;
+
+		/*
+		 * Generate u, the srp-6 way
+		 */
+		$uHash = hash($this->hashAlgo, 
+			$this->A->toHex() . $this->B->toHex());
+		$this->u = $this->hexToBigInt($uHash);
 
 		// A*v^u
 		$Avu = $A->multiply($this->v->modPow($this->u, $this->n));
@@ -125,10 +126,16 @@ class Srp6
 
 	public function generateServerHash()
 	{
+		if ($this->S == null) {
+			$this->computeS($this->A);
+
+		}
+
 		return hash($this->hashAlgo,
 			$this->A->toHex() .
 			$this->B->toHex() .
 			$this->S->toHex());
+
 	}
 
 	public function getKey()
@@ -147,14 +154,6 @@ class Srp6
 	public function getb_()
 	{
 		return $this->b->toHex();
-	}
-
-	/*
-	 * Return the hex of the u parameter
-	 */
-	public function getU()
-	{
-		return $this->u->toHex();
 	}
 
 	public function getS()

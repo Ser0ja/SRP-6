@@ -30,24 +30,18 @@ function handleInitial($A, $username)
     $v = getVFromDatabase($username);
     $srp->setV($v);
 
-    $srp->calculateBandU($A);
+    $srp->calculateB($A);
 
     // to send
     $salt = getSaltFromDb($username);
     $B = $srp->getB();
-    $u = $srp->getU();
 
-
-    // to delete
-    $srp->computeS($A);
 
     $ret = array(
         'status' => 'ok', 
         'salt' => $salt, 
-        'B' => $B, 
-        'u' => $u,
-        'A' => $A,
-        'serverKey' => $srp->getKey());
+        'B' => $B
+        );
 
     $_SESSION["srp"] = serialize($srp);
     die(json_encode($ret));

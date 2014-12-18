@@ -43,12 +43,11 @@
 
                         $("#data").append("Data received: <br/>" +
                             "Salt: " + data.salt + "<br/>" +
-                            "B: " + data.B + "<br/>" +
-                            "u: " + data.u + "<br/><br />");
+                            "B: " + data.B + "<br/><br />");
 
                         // Generate the key
                         var key = srp.calculateKey(username, password, 
-                            data.salt, data.B, data.u);
+                            data.salt, data.B);
 
                         // Prepare to send the verification of the key, to 
                         // the server
@@ -56,17 +55,19 @@
 
                         $("#data").append("Computing: <br/>" +
                             "Client key: " + key + "<br/>" +
-                            "Server key: " + data.serverKey + "<br/>" +
                             "verificationHash: " + verificationHash + "<br/><br/>");
 
                         $("#data").append("Transmitting to server: <br/>" + 
-                            "verificationHash");
+                            "verificationHash<br /><br />");
 
+
+                        $("#img-ajax").css("visibility", "visible");
                         $.ajax({
                             url: "server.php",
                             type: "POST",
                             data: {action: "Verification", verificationHash: verificationHash},
                             success: function(json){
+                                $("#img-ajax").css("visibility", "hidden");
                                 var data = JSON.parse(json);
                                 $("#data").append("Response from server: <br />" + 
                                     "Status: " + data.status);
