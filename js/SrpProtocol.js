@@ -11,7 +11,9 @@ var SrpProtocol = function(){
     this.k = new Clipperz.Crypto.BigInt(k_hex, 16);
 
     // TODO: Find a random a
-    this.a = new Clipperz.Crypto.BigInt("797efabd9c8996a32cf7d2a8c145a321e9afda799bb1d5e3a127f5eb2e4ff737a1a768844f6f28987d56aea3022437a8fd8e234342d4a81fcd586cdf33387db689b82ea9e07539e14c854062e13ff6190897b3639d106c7051c3b65ea635fdabdcf0a31af933e5acf6e73f3680f0ebbd3e1852c37d867602a10147d125b28f72",16);
+
+    // Must generate a value in the interval log_g(n) to n
+    this.a = Clipperz.Crypto.BigInt.randomPrime(256);
     this.A = this.g.powerModule(this.a, this.n);
 
 }
@@ -44,6 +46,7 @@ SrpProtocol.prototype.generateX = function(salt, username, password){
 
     return x;
 }
+
 SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     var k = this.k;
     var g = this.g;

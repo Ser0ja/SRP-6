@@ -99,7 +99,6 @@ class Srp6
 		$this->A = $A;
 	}
 
-
 	/*
 	 * Take the A, and computes S for the session
 	 */
