@@ -25,10 +25,10 @@
                 var username = $('input[type="text"]').val();
                 var password = $('input[type="password"]').val();
 
-                $("#data").append("Data calculated: <br />" +
+                $("#data").append("<b>Data calculated by client</b>: <br />" +
                     "a: " + srp.a + "<br />" +
                     "A: " + srp.A + "<br /><br/>" +
-                    "Data to be sent to server: " +
+                    "<b>Transmitting to server</b>: " +
                     "A, " + 
                     "Username: " + username + " <br/><br/>");
 
@@ -41,7 +41,7 @@
 
                         var data = JSON.parse(json);
 
-                        $("#data").append("Data received: <br/>" +
+                        $("#data").append("<b>Data received from server</b>: <br/>" +
                             "Salt: " + data.salt + "<br/>" +
                             "B: " + data.B + "<br/><br />");
 
@@ -53,11 +53,11 @@
                         // the server
                         var verificationHash = srp.generateVerification(data.B);
 
-                        $("#data").append("Computing: <br/>" +
+                        $("#data").append("<b>Data calculated by client</b>: <br/>" +
                             "Client key: " + key + "<br/>" +
                             "verificationHash: " + verificationHash + "<br/><br/>");
 
-                        $("#data").append("Transmitting to server: <br/>" + 
+                        $("#data").append("<b>Transmitting to server</b>: <br/>" + 
                             "verificationHash<br /><br />");
 
 
@@ -69,7 +69,7 @@
                             success: function(json){
                                 $("#img-ajax").css("visibility", "hidden");
                                 var data = JSON.parse(json);
-                                $("#data").append("Response from server: <br />" + 
+                                $("#data").append("<b>Data received from server</b>: <br />" + 
                                     "Status: " + data.status);
                             }
                         })
