@@ -73,7 +73,6 @@ class Srp6
 	{
 		$A = new Math_BigInteger('0x' . $A, 16);
 
-
 		/*
 		 * Generate b
 		 */
@@ -103,6 +102,7 @@ class Srp6
 		$uHash = hash($this->hashAlgo, 
 			$A->toString() . $this->B->toString());
 		$this->u = $this->hexToBigInt($uHash);
+		$this->A = $A;
 	}
 
 
@@ -120,6 +120,15 @@ class Srp6
 		// (A*v^u)^b
 		$this->S = $Avu->modPow($this->b, $this->n);
 		$this->key = hash($this->hashAlgo, $this->S->toString());
+	}
+
+
+	public function generateServerHash()
+	{
+		return hash($this->hashAlgo,
+			$this->A->toHex() .
+			$this->B->toHex() .
+			$this->S->toHex());
 	}
 
 	public function getKey()

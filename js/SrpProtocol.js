@@ -21,6 +21,7 @@ SrpProtocol.prototype.getA = function(){
 }
 
 SrpProtocol.prototype.generateUserInfo = function(username, password){
+    // TODO: Make salt random
     var salt = "carols-salt";
     var x = this.generateX(salt, username, password);
 
@@ -96,6 +97,9 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex, u
 SrpProtocol.prototype.generateVerification = function(B_hex)
 {
     return this.hash(this.A.asString(16) + B_hex + this.S.asString(16));
+    console.log("A: " + this.A.asString(16));
+    console.log("B: " + B_hex);
+    console.log("S: " + this.S.asString(16));
 }
 
 SrpProtocol.prototype.hash = function(string){

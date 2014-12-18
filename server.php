@@ -1,13 +1,20 @@
 <?php
+session_start();
 
 require_once('src/BigInteger.php');
 require_once('src/Srp6.class.php');
+
+
 
 $action = $_POST["action"];
 
 switch ($action) {
     case 'Initial':
         handleInitial($_POST["A"], $_POST["username"]);
+        break;
+    case 'Verification':
+        handleVerification($_POST["verificationHash"]);
+        break;
     
     default:
         handleDefault($action);
@@ -42,7 +49,22 @@ function handleInitial($A, $username)
         'A' => $A,
         'serverKey' => $srp->getKey());
 
+    $_SESSION["srp"] = serialize($srp);
     die(json_encode($ret));
+}
+
+function handleVerification($clientHash)
+{
+    $srp = unserialize($_SESSION["srp"]);
+
+    $serverHash = $srp->generateServerHash();
+
+    if ($serverHash == $clientHash) {
+        echo (json_encode(array('status' => 'ok')));
+    } else {
+        echo (json_encode(array('status' => 'fail')));
+    }
+
 }
 
 function handleDefault($action)

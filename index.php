@@ -15,16 +15,15 @@
             var srp = new SrpProtocol();
             var A = srp.getA();
 
-            //DEBUG
-            $('#submit').trigger("click");
-
             $('button[type=submit]').on('click', function(){
                 $("#img-ajax").css("visibility", "visible");
                 $("#data").css("visibility", "visible");
+                $("#data").html("");
 
 
-                var username = "carol";
-                var password = "carols-password";
+
+                var username = $('input[type="text"]').val();
+                var password = $('input[type="password"]').val();
 
                 $("#data").append("Data calculated: <br />" +
                     "a: " + srp.a + "<br />" +
@@ -53,7 +52,7 @@
 
                         // Prepare to send the verification of the key, to 
                         // the server
-                        var verificationHash = "test"; //srp.generateVerification(data.B);
+                        var verificationHash = srp.generateVerification(data.B);
 
                         $("#data").append("Computing: <br/>" +
                             "Client key: " + key + "<br/>" +
@@ -63,15 +62,16 @@
                         $("#data").append("Transmitting to server: <br/>" + 
                             "verificationHash");
 
-                        //$.ajax({
-                        //    url: "server.php",
-                        //    type: "POST",
-                        //    data: {action: "Verification", verificationHash: verificationHash},
-                        //    success: function(json){
-                        //        var data = JSON.parse(json);
-                        //        $("data").append("Response from server: <br />");
-                        //    }
-                        //})
+                        $.ajax({
+                            url: "server.php",
+                            type: "POST",
+                            data: {action: "Verification", verificationHash: verificationHash},
+                            success: function(json){
+                                var data = JSON.parse(json);
+                                $("#data").append("Response from server: <br />" + 
+                                    "Status: " + data.status);
+                            }
+                        })
 
                     }
                 });
@@ -88,8 +88,8 @@
             <input type="password" name="p" placeholder="Password" required="required" />
             <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
 
+        </div>
             <div class="debug" id="data" style="visibility: hidden;"></div>
             <img src="ajax-loader.gif" id="img-ajax" style="visibility: hidden" />
-        </div>
    </body>
 </html>
