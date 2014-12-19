@@ -23,8 +23,8 @@ SrpProtocol.prototype.getA = function(){
 }
 
 SrpProtocol.prototype.generateUserInfo = function(username, password){
-    // TODO: Make salt random
-    var salt = Math.random().toString(36).substring(7);
+    // TODO: how random should the salt be
+    var salt = Math.random().toString(36);
     var x = this.generateX(salt, username, password);
 
     // Generate v
