@@ -26,8 +26,9 @@
                 var password = $('input[type="password"]').val();
 
                 $("#data").append("<b>Data calculated by client</b>: <br />" +
-                    "a: " + srp.a + "<br />" +
-                    "A: " + srp.A + "<br /><br/>" +
+                    "a: " + srp.a.asString(16) + "<br />" +
+                    "A: " + srp.A.asString(16) + "<br/>" +
+                    "k: " + srp.k.asString(16) + "<br /><br/>" +
                     "<b>Transmitting to server</b>: " +
                     "A, " + 
                     "Username: " + username + " <br/><br/>");
@@ -54,6 +55,8 @@
                         var verificationHash = srp.generateVerification(data.B);
 
                         $("#data").append("<b>Data calculated by client</b>: <br/>" +
+                            "x: " + srp.x.asString(16) + "<br/>" +
+                            "u: " + srp.u.asString(16) + "<br/>" +
                             "Client key: " + key + "<br/>" +
                             "verificationHash: " + verificationHash + "<br/><br/>");
 

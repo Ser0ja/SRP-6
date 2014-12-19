@@ -58,14 +58,14 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     //console.log("B: " + B.asString(16));
 
     var u_hex = this.hash(this.A.asString(16) + B.asString(16));
-    var u = new Clipperz.Crypto.BigInt(u_hex, 16);
+    this.u = new Clipperz.Crypto.BigInt(u_hex, 16);
     //console.log("u: " + u.asString(16));
 
     // Calculate x
-    var x = this.generateX(salt, username, password);
+    this.x = this.generateX(salt, username, password);
 
     // kg^x
-    var kgx = k.multiply(g.powerModule(x, n));
+    var kgx = k.multiply(g.powerModule(this.x, n));
     kgx = kgx.module(n);
     //console.log("kgx:" + kgx.asString(16));
 
@@ -87,7 +87,7 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     //console.log("Bkgx:" + Bkgx.asString(16));
 
     // a + ux
-    var aux = a.add(u.multiply(x));
+    var aux = a.add(this.u.multiply(this.x));
     aux = aux.module(n);
     //console.log("aux:" + aux.asString(16));
 
