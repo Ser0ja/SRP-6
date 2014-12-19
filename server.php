@@ -56,7 +56,7 @@ function handleVerification($clientHash)
     if ($serverHash === $clientHash) {
         echo (json_encode(array('status' => 'ok')));
     } else {
-        echo (json_encode(array('status' => 'fail')));
+        echo (json_encode(array('status' => 'error')));
     }
 
 }
