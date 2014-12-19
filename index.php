@@ -77,6 +77,14 @@
                     }
                 });
             });
+
+
+            // If enter is clicked, try to submit
+            $(document).keypress(function(e) {
+                if(e.which == 13) {
+                    $('button[type=submit]').click();
+              }
+            });
         });
 
 
