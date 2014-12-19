@@ -53,7 +53,7 @@ function handleVerification($clientHash)
 
     $serverHash = $srp->generateServerHash();
 
-    if ($serverHash == $clientHash) {
+    if ($serverHash === $clientHash) {
         echo (json_encode(array('status' => 'ok')));
     } else {
         echo (json_encode(array('status' => 'fail')));

@@ -51,15 +51,6 @@ class Srp6
 		return new Math_BigInteger('0x' . $string, 16);	
 	}
 
-	public function generateV($x)
-	{
-		$x = $this->hexToBigInt($x);
-		$v = $this->g->modPow($x, $this->n);
-		$v = $this->modN($v);	
-		return $v;
-
-	}
-
 	private function modN($number)
 	{
 		return $number->modPow(new Math_BigInteger(1), $this->n);

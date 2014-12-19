@@ -41,7 +41,7 @@ SrpProtocol.prototype.generateUserInfo = function(username, password){
 SrpProtocol.prototype.generateX = function(salt, username, password){
     // Calculate x
     var hashHex = this.hash(salt + username +  password);
-    console.log("hash: " + hashHex);
+    //console.log("hash: " + hashHex);
     var x = new Clipperz.Crypto.BigInt(hashHex, 16);
 
     return x;
@@ -55,11 +55,11 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
 
 
     var B = new Clipperz.Crypto.BigInt(B_hex, 16);
-    console.log("B: " + B.asString(16));
+    //console.log("B: " + B.asString(16));
 
     var u_hex = this.hash(this.A.asString(16) + B.asString(16));
     var u = new Clipperz.Crypto.BigInt(u_hex, 16);
-    console.log("u: " + u.asString(16));
+    //console.log("u: " + u.asString(16));
 
     // Calculate x
     var x = this.generateX(salt, username, password);
@@ -67,7 +67,7 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     // kg^x
     var kgx = k.multiply(g.powerModule(x, n));
     kgx = kgx.module(n);
-    console.log("kgx:" + kgx.asString(16));
+    //console.log("kgx:" + kgx.asString(16));
 
     // B - kg^x
     var Bkgx = B.subtract(kgx);
@@ -77,23 +77,23 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
     // that module doesn't work as expected
     var zero = new Clipperz.Crypto.BigInt(0, 10);
     if (Bkgx.compare(zero) > 0) {
-        // If negative, the modulus must also be 
+        // if negative, the modulus must also be 
         // negative
-        var negativeN = zero.subtract(n); 
-        Bkgx = Bkgx.module(negativeN);
+        var negativen = zero.subtract(n); 
+        Bkgx = Bkgx.module(negativen);
     } else {
         Bkgx = Bkgx.module(n);
     };
-    console.log("Bkgx:" + Bkgx.asString(16));
+    //console.log("Bkgx:" + Bkgx.asString(16));
 
     // a + ux
     var aux = a.add(u.multiply(x));
     aux = aux.module(n);
-    console.log("aux:" + aux.asString(16));
+    //console.log("aux:" + aux.asString(16));
 
     // (B - kg^x)^{a+ux}
     this.S = Bkgx.powerModule(aux, n);
-    console.log("S: " + this.S.asString(16));
+    //console.log("S: " + this.S.asString(16));
     this.key = this.hash(this.S.asString(10));
     return this.key;
 }
@@ -101,9 +101,9 @@ SrpProtocol.prototype.calculateKey = function(username, password, salt, B_hex) {
 SrpProtocol.prototype.generateVerification = function(B_hex)
 {
     return this.hash(this.A.asString(16) + B_hex + this.S.asString(16));
-    console.log("A: " + this.A.asString(16));
-    console.log("B: " + B_hex);
-    console.log("S: " + this.S.asString(16));
+    //console.log("A: " + this.A.asString(16));
+    //console.log("B: " + B_hex);
+    //console.log("S: " + this.S.asString(16));
 }
 
 SrpProtocol.prototype.hash = function(string){
