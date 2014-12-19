@@ -24,7 +24,7 @@ SrpProtocol.prototype.getA = function(){
 
 SrpProtocol.prototype.generateUserInfo = function(username, password){
     // TODO: Make salt random
-    var salt = "carols-salt";
+    var salt = Math.random().toString(36).substring(7);
     var x = this.generateX(salt, username, password);
 
     // Generate v
