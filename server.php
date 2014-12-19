@@ -44,7 +44,7 @@ function handleInitial($A, $username)
         );
 
     $_SESSION["srp"] = serialize($srp);
-    die(json_encode($ret));
+    echo json_encode($ret);
 }
 
 function handleVerification($clientHash)
